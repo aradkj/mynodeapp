@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -9,9 +9,13 @@ on:
       - main
 
 jobs:
-  test:
+  test-and-build:
 
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Get code
@@ -27,5 +31,7 @@ jobs:
 
       - name: Run tests
         run: npm test
+
       - name: Build Docker image
         run: docker build -t ci-app:1.0 .
+
