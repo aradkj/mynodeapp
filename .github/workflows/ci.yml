@@ -35,3 +35,18 @@ jobs:
       - name: Build Docker image
         run: docker build -t ci-app:1.0 .
 
+      - name: Login to GitHub Container Registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag Docker image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: docker tag ci-app:1.0 ghcr.io/${{ github.repository_owner }}/ci-app:latest
+
+      - name: Push Docker image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: docker push ghcr.io/${{ github.repository_owner }}/ci-app:latest
